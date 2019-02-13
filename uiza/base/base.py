@@ -3,6 +3,8 @@ try:
 except ImportError:
     from urllib import urlencode
 
+from uiza.base.handle_errors import ClientBaseErrors
+
 
 class UizaBase(object):
 
@@ -16,7 +18,7 @@ class UizaBase(object):
         """
         self.connection = connection
 
-    def create(self, data):
+    def create(self, **data):
         """
 
         :param data:
@@ -26,17 +28,20 @@ class UizaBase(object):
 
         return result
 
-    def update(self, data):
+    def update(self, **kwargs):
         """
 
-        :param data:
+        :param kwargs:
         :return:
         """
-        data = self.connection.put(data=data)
+        if 'id' not in kwargs.keys():
+            raise ValueError(ClientBaseErrors.ERR_ID_NOT_FOUND)
+
+        data = self.connection.put(data=kwargs)
 
         return data
 
-    def get_list(self, params=None):
+    def get_list(self, **params):
         """
 
         :param params:
@@ -49,22 +54,30 @@ class UizaBase(object):
 
         return data
 
-    def retrieve(self, id):
+    def retrieve(self, **kwargs):
         """
 
         :param id:
         :return:
         """
+        id = kwargs.get('id')
+        if not id:
+            raise ValueError(ClientBaseErrors.ERR_ID_NOT_FOUND)
+
         query = '?{}'.format(urlencode({'id': id}))
         data = self.connection.get(query=query)
 
         return data
 
-    def delete(self, id):
+    def delete(self, **kwargs):
         """
 
         :return:
         """
+        id = kwargs.get('id')
+        if not id:
+            raise ValueError(ClientBaseErrors.ERR_ID_NOT_FOUND)
+
         data = self.connection.delete(dict(id=id))
 
         return data

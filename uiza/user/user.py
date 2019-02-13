@@ -1,3 +1,6 @@
+from mappers.user import CreateUserSchema, UpdateUserSchema, UpdatePasswordUserSchema, GetUsersSchema
+from uiza.base.decorators import validate_schema
+
 try:
     from urllib.parse import urlencode
 except ImportError:
@@ -24,6 +27,36 @@ class User(UizaBase):
             api_sub_url=settings.uiza_api.user.sub_url
         )
 
+    @validate_schema(schema=GetUsersSchema)
+    def get_users(self, params=None):
+        query = ''
+        if params:
+            query = '?{}'.format(urlencode(params))
+        data = self.connection.get(query=query)
+
+        return data
+
+    @validate_schema(schema=CreateUserSchema())
+    def create(self, data):
+        """
+
+        :param kwargs:
+        :return:
+        """
+        result = self.connection.post(data=data)
+        return result
+
+    @validate_schema(schema=UpdateUserSchema())
+    def update(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+        data = self.connection.put(data=data)
+        return data
+
+    @validate_schema(schema=UpdatePasswordUserSchema())
     def update_password(self, data):
         """
 

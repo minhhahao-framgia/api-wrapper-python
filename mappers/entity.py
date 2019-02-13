@@ -1,0 +1,43 @@
+from marshmallow import fields
+
+from mappers.base import BaseSchema
+from uiza.entity.handle_errors import EntitiesErrors
+
+
+class CreateEntitySchema(BaseSchema):
+    name = fields.Str(required=True, error_messages={'required': EntitiesErrors.ERR_UIZA_ENTITY_CREATE_NAME})
+    url = fields.Str(required=True, error_messages={'required': EntitiesErrors.ERR_UIZA_ENTITY_CREATE_URL})
+    inputType = fields.Str(required=True,
+                           validate=lambda x: x in ['http', 's3', 'ftp', 's3-uiza'],
+                           error_messages={'required': EntitiesErrors.ERR_UIZA_ENTITY_CREATE_URL})
+    description = fields.Str()
+    metadataId = fields.List(fields.Str())
+    shortDescription = fields.Str(lambda x: len(x) <= 250)
+    poster = fields.Str()
+    thumbnail = fields.Str()
+    metadataIds = fields.List(fields.Str())
+    extendMetadata = fields.Dict()
+    embedMetadata = fields.Dict()
+
+    class Meta:
+        strict = True
+
+
+class ListEntitySchema(BaseSchema):
+    id = fields.Str()
+    name = fields.Str()
+    description = fields.Str()
+    shortDescription = fields.Str(lambda x: len(x) <= 250)
+    view = fields.Str()
+    poster = fields.Str()
+    thumbnail = fields.Str()
+    type = fields.Str(lambda x: x in ['vod', 'aod'])
+    duration = fields.Str()
+    publishToCdn = fields.Str(lambda x: x in ['queue', 'not-ready', 'success', 'failed'], error_messages='')
+    embedMetadata = fields.Dict()
+    extendData = fields.Dict()
+    createdAt = fields.Date()
+    updatedAt = fields.Date()
+
+    class Meta:
+        strict = True
