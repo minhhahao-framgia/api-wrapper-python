@@ -12,7 +12,7 @@ class CreateEntitySchema(BaseSchema):
                            error_messages={'required': EntitiesErrors.ERR_UIZA_ENTITY_CREATE_URL})
     description = fields.Str()
     metadataId = fields.List(fields.Str())
-    shortDescription = fields.Str(lambda x: len(x) <= 250)
+    shortDescription = fields.Str(validate=lambda x: len(x) <= 250)
     poster = fields.Str()
     thumbnail = fields.Str()
     metadataIds = fields.List(fields.Str())
@@ -24,20 +24,16 @@ class CreateEntitySchema(BaseSchema):
 
 
 class ListEntitySchema(BaseSchema):
-    id = fields.Str()
-    name = fields.Str()
-    description = fields.Str()
-    shortDescription = fields.Str(lambda x: len(x) <= 250)
-    view = fields.Str()
-    poster = fields.Str()
-    thumbnail = fields.Str()
-    type = fields.Str(lambda x: x in ['vod', 'aod'])
-    duration = fields.Str()
-    publishToCdn = fields.Str(lambda x: x in ['queue', 'not-ready', 'success', 'failed'], error_messages='')
-    embedMetadata = fields.Dict()
-    extendData = fields.Dict()
-    createdAt = fields.Date()
-    updatedAt = fields.Date()
+    metadataId = fields.List(fields.Str())
+    publishToCdn = fields.Str(validate=lambda x: x in ['queue', 'not-ready', 'success', 'failed'],
+                              error_messages={'validator_failed': EntitiesErrors.ERR_UIZA_ENTITY_LIST_PUBLIST_TO_CDN})
+
+    class Meta:
+        strict = True
+
+
+class SearchEntitySchema(BaseSchema):
+    keyword = fields.Str(required=True, error_messages={'required': EntitiesErrors.ERR_UIZA_ENTITY_SEARCH_KEYWORD})
 
     class Meta:
         strict = True

@@ -5,8 +5,9 @@ except ImportError:
 
 from uiza.base.decorators import validate_schema
 from uiza.base.base import UizaBase
+from uiza.base.handle_errors import ClientException
 from uiza.entity.handle_errors import EntitiesErrors
-from mappers.entity import CreateEntitySchema, ListEntitySchema
+from mappers.entity import CreateEntitySchema, ListEntitySchema, SearchEntitySchema
 from utility.utility import set_url
 from settings.config import settings
 
@@ -39,7 +40,12 @@ class Entity(UizaBase):
         return result
 
     @validate_schema(schema=ListEntitySchema())
-    def get_entities(self, params):
+    def list(self, params):
+        """
+
+        :param params:
+        :return:
+        """
         query = ''
         if params:
             query = '?{}'.format(urlencode(params))
@@ -47,21 +53,15 @@ class Entity(UizaBase):
 
         return data
 
-
-    def search_entity(self, **kwargs):
+    @validate_schema(schema=SearchEntitySchema())
+    def search_entity(self, params):
         """
 
-        :param kwargs:
+        :param params:
         :return:
         """
-        keyword = kwargs.get('keyword')
-        if not keyword:
-            raise ValueError(EntitiesErrors.ERR_UIZA_ENTITY_SEARCH_KEYWORD)
-
         self.connection.url = '{}/search'.format(self.connection.url)
-        query = ''
-        if kwargs:
-            query = '?{}'.format(urlencode(kwargs))
+        query = '?{}'.format(urlencode(params))
         data = self.connection.get(query=query)
 
         return data
@@ -73,7 +73,7 @@ class Entity(UizaBase):
         :return:
         """
         if 'id' not in kwargs.keys():
-            raise ValueError(EntitiesErrors.ERR_UIZA_ENTITY_PUBLISH_ID)
+            raise ClientException(EntitiesErrors.ERR_UIZA_ENTITY_PUBLISH_ID)
 
         self.connection.url = '{}/publish'.format(self.connection.url)
         data = self.connection.post(data=kwargs)
@@ -88,7 +88,7 @@ class Entity(UizaBase):
         """
         id = kwargs.get('id')
         if not id:
-            raise ValueError(EntitiesErrors.ERR_UIZA_ENTITY_GET_STATUS_PUBLISH_ID)
+            raise ClientException(EntitiesErrors.ERR_UIZA_ENTITY_GET_STATUS_PUBLISH_ID)
 
         self.connection.url = '{}/publish/status'.format(self.connection.url)
         query = '?{}'.format(urlencode({'id': id}))

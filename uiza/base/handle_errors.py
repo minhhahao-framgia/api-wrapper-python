@@ -3,6 +3,10 @@ class ServerException(Exception):
     pass
 
 
+class ClientException(Exception):
+    pass
+
+
 class ClientBaseErrors(object):
     ERR_ID_NOT_FOUND = 'id must be present'
 

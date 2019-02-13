@@ -1,5 +1,6 @@
 
 class EntitiesErrors(object):
+    ERR_UIZA_ENTITY_ID_NOT_FOUND = 'id must be present'
     ERR_UIZA_ENTITY_CREATE_NAME = 'name must be present'
     ERR_UIZA_ENTITY_CREATE_URL = 'url must be present'
     ERR_UIZA_ENTITY_CREATE_INPUT_TYPE = 'inputType must be present and must be in [http, s3, ftp, s3-uiza]'
